@@ -5,7 +5,7 @@
 %define		commitid	85e2d886bcb005d49f3876d6849a2b5a55e03cd3
 Summary:	Cloud Storage Server
 Name:		minio
-Version:	0.%{subver}
+Version:	0.0.%{subver}
 Release:	1
 License:	Apache v2.0
 Group:		Development/Building
