@@ -1,8 +1,8 @@
-%define		tag	RELEASE.2017-01-25T03-14-52Z
+%define		tag	RELEASE.2017-02-16T01-47-30Z
 %define		subver	%(echo %{tag} | sed -e 's/[^0-9]//g')
-# git fetch https://github.com/minio/minio.git refs/tags/RELEASE.2017-01-25T03-14-52Z
+# git fetch https://github.com/minio/minio.git refs/tags/RELEASE.2017-02-16T01-47-30Z
 # git rev-list -n 1 FETCH_HEAD
-%define		commitid	f8e4700a11065967242b8857045ce7dee607722d
+%define		commitid	3d98311d9f4ceb78dba996dcdc0751253241e697
 Summary:	Object Storage Server
 Name:		minio
 Version:	0.0.%{subver}
