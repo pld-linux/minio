@@ -1,8 +1,8 @@
-%define		tag	RELEASE.2017-01-25T03-14-52Z
+%define		tag	RELEASE.2017-05-05T01-14-51Z
 %define		subver	%(echo %{tag} | sed -e 's/[^0-9]//g')
-# git fetch https://github.com/minio/minio.git refs/tags/RELEASE.2017-01-25T03-14-52Z
+# git fetch https://github.com/minio/minio.git refs/tags/RELEASE.2017-05-05T01-14-51Z
 # git rev-list -n 1 FETCH_HEAD
-%define		commitid	f8e4700a11065967242b8857045ce7dee607722d
+%define		commitid	4f61bd025deeb1d0136d7a367f56e85877266e0e
 Summary:	Object Storage Server
 Name:		minio
 Version:	0.0.%{subver}
@@ -10,7 +10,7 @@ Release:	1
 License:	Apache v2.0
 Group:		Development/Building
 Source0:	https://github.com/minio/minio/archive/%{tag}.tar.gz
-# Source0-md5:	0c3a765963ce20b5436c54c5f52984d5
+# Source0-md5:	353ed77947b86534d374d57054659efd
 URL:		https://www.minio.io/
 BuildRequires:	golang >= 1.7
 ExclusiveArch:	%{ix86} %{x8664} %{arm}
