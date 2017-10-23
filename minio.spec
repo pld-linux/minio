@@ -1,8 +1,8 @@
-%define		tag	RELEASE.2017-05-05T01-14-51Z
+%define		tag	RELEASE.2017-08-05T00-00-53Z
 %define		subver	%(echo %{tag} | sed -e 's/[^0-9]//g')
-# git fetch https://github.com/minio/minio.git refs/tags/RELEASE.2017-05-05T01-14-51Z
+# git fetch https://github.com/minio/minio.git refs/tags/RELEASE.2017-08-05T00-00-53Z
 # git rev-list -n 1 FETCH_HEAD
-%define		commitid	4f61bd025deeb1d0136d7a367f56e85877266e0e
+%define		commitid	aeafe668d8b6d25caac671d59e2b0f0473ce35d0
 Summary:	Object Storage Server
 Name:		minio
 Version:	0.0.%{subver}
@@ -10,7 +10,7 @@ Release:	1
 License:	Apache v2.0
 Group:		Development/Building
 Source0:	https://github.com/minio/minio/archive/%{tag}.tar.gz
-# Source0-md5:	353ed77947b86534d374d57054659efd
+# Source0-md5:	10711530ef4f690ce6a306e91aefc9ee
 URL:		https://www.minio.io/
 BuildRequires:	golang >= 1.7
 ExclusiveArch:	%{ix86} %{x8664} %{arm}
@@ -28,14 +28,13 @@ It API compatible with Amazon S3 cloud storage service.
 
 %prep
 %setup -qc
-mv %{name}-*/* .
 
 install -d src/$(dirname %{import_path})
-ln -s ../../.. src/%{import_path}
+mv %{name}-*/*.md .
+mv %{name}-* src/%{import_path}
 
 %build
 export GOPATH=$(pwd)
-export GOROOT=%{_libdir}/golang
 
 # setup flags like 'go run buildscripts/gen-ldflags.go' would do
 tag=%{tag}
@@ -51,7 +50,7 @@ LDFLAGS="
 -X $prefix.ShortCommitID=$scommitid
 "
 
-%gobuild -o %{name}
+%gobuild -o %{name} %{import_path}
 
 # check that version set properly
 ./%{name} version | tee v
