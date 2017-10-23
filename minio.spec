@@ -1,8 +1,6 @@
-%define		tag	RELEASE.2017-08-05T00-00-53Z
+%define		tag	RELEASE.2017-09-29T19-16-56Z
 %define		subver	%(echo %{tag} | sed -e 's/[^0-9]//g')
-# git fetch https://github.com/minio/minio.git refs/tags/RELEASE.2017-08-05T00-00-53Z
-# git rev-list -n 1 FETCH_HEAD
-%define		commitid	aeafe668d8b6d25caac671d59e2b0f0473ce35d0
+%define		commitid	60cc6184d253efee4a3120683517028342229e21
 Summary:	Object Storage Server
 Name:		minio
 Version:	0.0.%{subver}
@@ -10,7 +8,7 @@ Release:	1
 License:	Apache v2.0
 Group:		Development/Building
 Source0:	https://github.com/minio/minio/archive/%{tag}.tar.gz
-# Source0-md5:	10711530ef4f690ce6a306e91aefc9ee
+# Source0-md5:	9d7e6e8b0060405f0b019355eaa16743
 URL:		https://www.minio.io/
 BuildRequires:	golang >= 1.7
 ExclusiveArch:	%{ix86} %{x8664} %{arm}
@@ -23,8 +21,8 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 %define		import_path	github.com/minio/minio
 
 %description
-Minio is an object storage server released under Apache License v2.0.
-It API compatible with Amazon S3 cloud storage service.
+Minio is an open source object storage server with Amazon S3
+compatible API.
 
 %prep
 %setup -qc
