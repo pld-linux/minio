@@ -1,6 +1,7 @@
-%define		tag	RELEASE.2017-09-29T19-16-56Z
+%define		tag	RELEASE.2025-10-15T17-29-55Z
 %define		subver	%(echo %{tag} | sed -e 's/[^0-9]//g')
-%define		commitid	60cc6184d253efee4a3120683517028342229e21
+%define		commitid	9e49d5e7a648f00e26f2246f4dc28e6b07f8c84a
+%define		vendor_version	20251015
 Summary:	Object Storage Server
 Name:		minio
 Version:	0.0.%{subver}
@@ -8,32 +9,40 @@ Release:	1
 License:	Apache v2.0
 Group:		Development/Building
 Source0:	https://github.com/minio/minio/archive/%{tag}.tar.gz
-# Source0-md5:	9d7e6e8b0060405f0b019355eaa16743
-URL:		https://www.minio.io/
-BuildRequires:	golang >= 1.7
-ExclusiveArch:	%{ix86} %{x8664} %{arm}
+# Source0-md5:	e86a4ebe9720a4bba2640caf8f47504f
+# cd minio-%%{tag}
+# go mod vendor
+# cd ..
+# tar cJf minio-vendor-%%{vendor_version}.tar.xz minio-%%{tag}/vendor
+Source1:	%{name}-vendor-%{vendor_version}.tar.xz
+# Source1-md5:	fe00b43632fbd0fa1edcc51be77bffce
+URL:		https://min.io/
+BuildRequires:	golang >= 1.24.0
+BuildRequires:	rpm-build >= 4.6
+BuildRequires:	rpmbuild(macros) >= 2.009
+BuildRequires:	tar >= 1:1.22
+BuildRequires:	xz
+ExclusiveArch:	%go_arches
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
-# go stuff
-%define		_enable_debug_packages 0
-%define		gobuild(o:) go build -ldflags "${LDFLAGS:-} -B 0x$(head -c20 /dev/urandom|od -An -tx1|tr -d ' \\n')" -a -v -x %{?**};
-%define		gopath		%{_libdir}/golang
+%define		_enable_debug_packages	0
+
 %define		import_path	github.com/minio/minio
 
 %description
-Minio is an open source object storage server with Amazon S3
-compatible API.
+MinIO is a high-performance, S3 compatible object store. It is built
+for large scale AI/ML, data lake and database workloads.
 
 %prep
-%setup -qc
+%setup -qc -a1
 
-install -d src/$(dirname %{import_path})
 mv %{name}-*/*.md .
-mv %{name}-* src/%{import_path}
+mv %{name}-*/vendor .
+mv %{name}-*/* .
+
+%{__mkdir_p} .go-cache
 
 %build
-export GOPATH=$(pwd)
-
 # setup flags like 'go run buildscripts/gen-ldflags.go' would do
 tag=%{tag}
 version=${tag#RELEASE.}
@@ -41,27 +50,22 @@ commitid=%{commitid}
 scommitid=$(echo $commitid | cut -c1-12)
 prefix=%{import_path}/cmd
 
-LDFLAGS="
--X $prefix.Version=$version
--X $prefix.ReleaseTag=$tag
--X $prefix.CommitID=$commitid
--X $prefix.ShortCommitID=$scommitid
-"
-
-%gobuild -o %{name} %{import_path}
+%__go build -v -mod=vendor \
+	-ldflags " \
+	-X $prefix.Version=$version \
+	-X $prefix.ReleaseTag=$tag \
+	-X $prefix.CommitID=$commitid \
+	-X $prefix.ShortCommitID=$scommitid \
+	-X $prefix.CopyrightYear=2025 \
+	-X $prefix.GOPATH=%{_libdir}/golang \
+	-X $prefix.GOROOT=%{_libdir}/golang" \
+	-o %{name}
 
 # check that version set properly
-./%{name} version | tee v
-
-#Version: 2016-09-11T17-42-18Z
-#Release-Tag: RELEASE.2016-09-11T17-42-18Z
-#Commit-ID: 85e2d886bcb005d49f3876d6849a2b5a55e03cd3
-v=$(awk '/Version:/{print $2}' v)
-test "$v" = $version
-v=$(awk '/Release-Tag:/{print $2}' v)
-test "$v" = $tag
-v=$(awk '/Commit-ID:/{print $2}' v)
-test "$v" = $commitid
+# output: minio version RELEASE.xxx (commit-id=xxx)
+./%{name} --version | tee v
+grep -q "$tag" v
+grep -q "$scommitid" v
 
 %install
 rm -rf $RPM_BUILD_ROOT
